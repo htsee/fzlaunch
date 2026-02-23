@@ -53,7 +53,7 @@ func ParseDesktop(desktopPath string) (string, DesktopEntry, error) {
 	for _, line := range lines {
 		key, val, found := strings.Cut(line, "=")
 		if !found {
-			if line == "[Desktop Entry]" {
+			if line == "[Desktop Entry]" || strings.HasPrefix(line, "#") {
 				continue
 			} else {
 				break
