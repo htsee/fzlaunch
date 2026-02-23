@@ -66,7 +66,7 @@ func ParseDesktop(desktopPath string) (string, DesktopEntry, error) {
 		case "Exec":
 			appExec, _, _ = strings.Cut(val, "%")
 			cmd := strings.Split(appExec, " ")
-			appExec, appArgs = cmd[0], cmd[0:]
+			appExec, appArgs = cmd[0], cmd[1:]
 		default:
 			continue
 		}
