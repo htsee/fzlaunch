@@ -32,12 +32,14 @@ func GetDesktop() []string {
 }
 
 type DesktopEntry struct {
-	Exec       string
-	Args       []string
-	IsTerminal bool
-	Icon       string
-	Comment    string
-	Categories []string
+	IsTerminal  bool
+	Exec        string
+	Args        []string
+	GenericName string
+	Comment     string
+	Categories  []string
+	Keywords    []string
+	Icon        string
 }
 
 func ParseDesktop(desktopPath string) (string, DesktopEntry, error) {
@@ -46,10 +48,9 @@ func ParseDesktop(desktopPath string) (string, DesktopEntry, error) {
 		return "", DesktopEntry{}, fmt.Errorf("cannot read file %v", desktopPath)
 	}
 	lines := strings.Split(string(content), "\n")
-	var appName, appExec, appIcon, appComment string
-	var appArgs []string
 	var isTerm bool
-	var appCategories []string
+	var appName, appExec, appGenericName, appComment, appIcon string
+	var appArgs, appCategories, appKeywords []string
 	for _, line := range lines {
 		key, val, found := strings.Cut(line, "=")
 		if !found {
@@ -71,17 +72,28 @@ func ParseDesktop(desktopPath string) (string, DesktopEntry, error) {
 			appExec, _, _ = strings.Cut(val, "%")
 			cmd := strings.Split(appExec, " ")
 			appExec, appArgs = cmd[0], cmd[1:]
-		case "Icon":
-			appIcon = val
+		case "GenericName":
+			appGenericName = val
 		case "Comment":
 			appComment = val
 		case "Categories":
 			appCategories = strings.Split(strings.Trim(val, ";"), ";")
-		default:
-			continue
+		case "Keywords":
+			appKeywords = strings.Split(strings.Trim(val, ";"), ";")
+		case "Icon":
+			appIcon = val
 		}
 	}
-	return appName, DesktopEntry{Exec: appExec, Args: appArgs, IsTerminal: isTerm, Icon: appIcon, Comment: appComment, Categories: appCategories}, nil
+	return appName, DesktopEntry{
+		IsTerminal:  isTerm,
+		Exec:        appExec,
+		Args:        appArgs,
+		GenericName: appGenericName,
+		Comment:     appComment,
+		Categories:  appCategories,
+		Keywords:    appKeywords,
+		Icon:        appIcon,
+	}, nil
 }
 
 func DesktopEntries() (map[string]DesktopEntry, error) {

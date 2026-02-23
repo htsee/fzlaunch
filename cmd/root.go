@@ -73,7 +73,20 @@ var PreviewCmd = &cobra.Command{
 			fmt.Printf("cannot find application %v", appName)
 			return nil
 		}
-		fmt.Printf("%v\n%v\nCategories: %v", appName, entry.Comment, strings.Join(entry.Categories, ", "))
+		preview := appName + "\n\n"
+		if entry.GenericName != "" {
+			preview += entry.GenericName + "\n"
+		}
+		if len(entry.Categories) != 0 {
+			preview += fmt.Sprintf("Categories: %v", strings.Join(entry.Categories, ", ")) + "\n"
+		}
+		if len(entry.Keywords) != 0 {
+			preview += fmt.Sprintf("Keywords: %v", strings.Join(entry.Keywords, ", ")) + "\n"
+		}
+		if entry.Comment != "" {
+			preview += "\n" + entry.Comment + "\n"
+		}
+		fmt.Println(preview)
 		return nil
 	},
 }
