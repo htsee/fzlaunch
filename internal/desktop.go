@@ -1,8 +1,10 @@
 package internal
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -27,4 +29,58 @@ func GetDesktop() []string {
 		}
 	}
 	return desktop
+}
+
+type DesktopEntry struct {
+	Name       string
+	Exec       string
+	IsTerminal bool
+}
+
+func ParseDesktop(desktopPath string) (DesktopEntry, error) {
+	content, err := os.ReadFile(desktopPath)
+	if err != nil {
+		return DesktopEntry{}, fmt.Errorf("cannot read file %v", desktopPath)
+	}
+	lines := strings.Split(string(content), "\n")
+	var appName, appExec string
+	var isTerm bool
+	for _, line := range lines {
+		key, val, found := strings.Cut(line, "=")
+		if !found {
+			if line == "[Desktop Entry]" {
+				continue
+			} else {
+				break
+			}
+		}
+		switch key {
+		case "Terminal":
+			isTerm, err = strconv.ParseBool(val)
+			if err != nil {
+				return DesktopEntry{}, err
+			}
+		case "Name":
+			appName = val
+		case "Exec":
+			appExec = val
+		default:
+			continue
+		}
+	}
+	return DesktopEntry{Name: appName, Exec: appExec, IsTerminal: isTerm}, nil
+}
+
+func DesktopEntries() ([]DesktopEntry, error) {
+	var entries []DesktopEntry
+	for _, desktopPath := range GetDesktop() {
+		entry, err := ParseDesktop(desktopPath)
+		if err != nil {
+			return entries, err
+		}
+		if !entry.IsTerminal {
+			entries = append(entries, entry)
+		}
+	}
+	return entries, nil
 }
