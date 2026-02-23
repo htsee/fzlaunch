@@ -1,7 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/htsee/fzlaunch/internal"
+)
 
 func main() {
-	fmt.Println("hi")
+	fmt.Println(internal.XdgData)
 }
