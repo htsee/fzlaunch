@@ -9,7 +9,8 @@ import (
 )
 
 var RootCmd = &cobra.Command{
-	Use: "fzlaunch",
+	Use:   "fzlaunch",
+	Short: "cli app launcher, can be piped into a fuzzy search menu",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := cmd.Help(); err != nil {
 			return err
