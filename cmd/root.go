@@ -46,7 +46,7 @@ var RunCmd = &cobra.Command{
 		for _, entry := range entries {
 			if appName == entry.Name {
 				cmd := exec.Command(entry.Exec)
-				if err := cmd.Run(); err != nil {
+				if err := cmd.Start(); err != nil {
 					return err
 				}
 				return nil
