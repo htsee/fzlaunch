@@ -64,7 +64,8 @@ func ParseDesktop(desktopPath string) (DesktopEntry, error) {
 		case "Name":
 			appName = val
 		case "Exec":
-			appExec = val
+			appExec, _, _ = strings.Cut(val, "%")
+			appExec = strings.TrimSpace(appExec)
 		default:
 			continue
 		}
