@@ -7,5 +7,5 @@ import (
 )
 
 func main() {
-	fmt.Println(internal.XdgData)
+	fmt.Println(internal.GetDesktop())
 }
