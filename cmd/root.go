@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os/exec"
+	"strings"
 
 	"github.com/htsee/fzlaunch/internal"
 	"github.com/spf13/cobra"
@@ -57,7 +58,28 @@ var RunCmd = &cobra.Command{
 	},
 }
 
+var PreviewCmd = &cobra.Command{
+	Use:   "preview",
+	Short: "show information about application",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		appName := args[0]
+		entries, err := internal.DesktopEntries()
+		if err != nil {
+			return err
+		}
+		entry, exist := entries[appName]
+		if !exist {
+			fmt.Printf("cannot find application %v", appName)
+			return nil
+		}
+		fmt.Printf("%v\n%v\nCategories: %v", appName, entry.Comment, strings.Join(entry.Categories, ", "))
+		return nil
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(ListCmd)
 	RootCmd.AddCommand(RunCmd)
+	RootCmd.AddCommand(PreviewCmd)
 }

@@ -35,6 +35,9 @@ type DesktopEntry struct {
 	Exec       string
 	Args       []string
 	IsTerminal bool
+	Icon       string
+	Comment    string
+	Categories []string
 }
 
 func ParseDesktop(desktopPath string) (string, DesktopEntry, error) {
@@ -43,9 +46,10 @@ func ParseDesktop(desktopPath string) (string, DesktopEntry, error) {
 		return "", DesktopEntry{}, fmt.Errorf("cannot read file %v", desktopPath)
 	}
 	lines := strings.Split(string(content), "\n")
-	var appName, appExec string
+	var appName, appExec, appIcon, appComment string
 	var appArgs []string
 	var isTerm bool
+	var appCategories []string
 	for _, line := range lines {
 		key, val, found := strings.Cut(line, "=")
 		if !found {
@@ -67,11 +71,17 @@ func ParseDesktop(desktopPath string) (string, DesktopEntry, error) {
 			appExec, _, _ = strings.Cut(val, "%")
 			cmd := strings.Split(appExec, " ")
 			appExec, appArgs = cmd[0], cmd[1:]
+		case "Icon":
+			appIcon = val
+		case "Comment":
+			appComment = val
+		case "Categories":
+			appCategories = strings.Split(strings.Trim(val, ";"), ";")
 		default:
 			continue
 		}
 	}
-	return appName, DesktopEntry{Exec: appExec, Args: appArgs, IsTerminal: isTerm}, nil
+	return appName, DesktopEntry{Exec: appExec, Args: appArgs, IsTerminal: isTerm, Icon: appIcon, Comment: appComment, Categories: appCategories}, nil
 }
 
 func DesktopEntries() (map[string]DesktopEntry, error) {
