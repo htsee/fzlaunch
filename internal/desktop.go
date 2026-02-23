@@ -35,6 +35,7 @@ func GetDesktop() []string {
 type DesktopEntry struct {
 	Name       string
 	Exec       string
+	Args       []string
 	IsTerminal bool
 }
 
@@ -45,6 +46,7 @@ func ParseDesktop(desktopPath string) (DesktopEntry, error) {
 	}
 	lines := strings.Split(string(content), "\n")
 	var appName, appExec string
+	var appArgs []string
 	var isTerm bool
 	for _, line := range lines {
 		key, val, found := strings.Cut(line, "=")
@@ -65,12 +67,17 @@ func ParseDesktop(desktopPath string) (DesktopEntry, error) {
 			appName = val
 		case "Exec":
 			appExec, _, _ = strings.Cut(val, "%")
-			appExec = strings.TrimSpace(appExec)
+			cmd := strings.Split(appExec, " ")
+			appExec, appArgs = cmd[0], cmd[0:]
 		default:
 			continue
 		}
 	}
-	return DesktopEntry{Name: appName, Exec: appExec, IsTerminal: isTerm}, nil
+	return DesktopEntry{Name: appName, Exec: appExec, Args: appArgs, IsTerminal: isTerm}, nil
+}
+
+func sameName(a, b DesktopEntry) bool {
+	return a.Name == b.Name
 }
 
 func DesktopEntries() ([]DesktopEntry, error) {
@@ -85,6 +92,6 @@ func DesktopEntries() ([]DesktopEntry, error) {
 		}
 		entries = append(entries, entry)
 	}
-	entries = slices.Compact(entries)
+	entries = slices.CompactFunc(entries, sameName)
 	return entries, nil
 }
