@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -78,9 +79,11 @@ func DesktopEntries() ([]DesktopEntry, error) {
 		if err != nil {
 			return entries, err
 		}
-		if !entry.IsTerminal {
-			entries = append(entries, entry)
+		if entry.IsTerminal || entry.Name == "" || entry.Exec == "" {
+			continue
 		}
+		entries = append(entries, entry)
 	}
+	entries = slices.Compact(entries)
 	return entries, nil
 }
