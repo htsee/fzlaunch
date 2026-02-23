@@ -20,7 +20,7 @@ func GetDesktop() []string {
 		}
 
 		for _, file := range files {
-			fileName := file.Name()
+			fileName := filepath.Join(appDir, file.Name())
 			if filepath.Ext(fileName) == ".desktop" {
 				desktop = append(desktop, fileName)
 			}
