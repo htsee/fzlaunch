@@ -1,11 +1,10 @@
 package main
 
 import (
-	"fmt"
-
-	"github.com/htsee/fzlaunch/internal"
+	"github.com/htsee/fzlaunch/cmd"
+	"github.com/spf13/cobra"
 )
 
 func main() {
-	fmt.Println(internal.DesktopEntries())
+	cobra.CheckErr(cmd.RootCmd.Execute())
 }
