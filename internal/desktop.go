@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"slices"
 	"strconv"
 	"strings"
 )
@@ -33,16 +32,15 @@ func GetDesktop() []string {
 }
 
 type DesktopEntry struct {
-	Name       string
 	Exec       string
 	Args       []string
 	IsTerminal bool
 }
 
-func ParseDesktop(desktopPath string) (DesktopEntry, error) {
+func ParseDesktop(desktopPath string) (string, DesktopEntry, error) {
 	content, err := os.ReadFile(desktopPath)
 	if err != nil {
-		return DesktopEntry{}, fmt.Errorf("cannot read file %v", desktopPath)
+		return "", DesktopEntry{}, fmt.Errorf("cannot read file %v", desktopPath)
 	}
 	lines := strings.Split(string(content), "\n")
 	var appName, appExec string
@@ -61,7 +59,7 @@ func ParseDesktop(desktopPath string) (DesktopEntry, error) {
 		case "Terminal":
 			isTerm, err = strconv.ParseBool(val)
 			if err != nil {
-				return DesktopEntry{}, err
+				return "", DesktopEntry{}, err
 			}
 		case "Name":
 			appName = val
@@ -73,25 +71,21 @@ func ParseDesktop(desktopPath string) (DesktopEntry, error) {
 			continue
 		}
 	}
-	return DesktopEntry{Name: appName, Exec: appExec, Args: appArgs, IsTerminal: isTerm}, nil
+	return appName, DesktopEntry{Exec: appExec, Args: appArgs, IsTerminal: isTerm}, nil
 }
 
-func sameName(a, b DesktopEntry) bool {
-	return a.Name == b.Name
-}
+func DesktopEntries() (map[string]DesktopEntry, error) {
+	entries := make(map[string]DesktopEntry)
 
-func DesktopEntries() ([]DesktopEntry, error) {
-	var entries []DesktopEntry
 	for _, desktopPath := range GetDesktop() {
-		entry, err := ParseDesktop(desktopPath)
+		name, entry, err := ParseDesktop(desktopPath)
 		if err != nil {
-			return entries, err
+			return nil, err
 		}
-		if entry.IsTerminal || entry.Name == "" || entry.Exec == "" {
+		if entry.IsTerminal || name == "" || entry.Exec == "" {
 			continue
 		}
-		entries = append(entries, entry)
+		entries[name] = entry
 	}
-	entries = slices.CompactFunc(entries, sameName)
 	return entries, nil
 }

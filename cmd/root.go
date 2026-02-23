@@ -26,8 +26,8 @@ var ListCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		for _, entry := range entries {
-			fmt.Println(entry.Name)
+		for name := range entries {
+			fmt.Println(name)
 		}
 		return nil
 	},
@@ -43,16 +43,15 @@ var RunCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		for _, entry := range entries {
-			if appName == entry.Name {
-				cmd := exec.Command(entry.Exec, entry.Args...)
-				if err := cmd.Start(); err != nil {
-					return err
-				}
-				return nil
-			}
+		entry, exist := entries[appName]
+		if !exist {
+			fmt.Printf("cannot find application %v", appName)
+			return nil
 		}
-		fmt.Printf("cannot find application %v", appName)
+		app := exec.Command(entry.Exec, entry.Args...)
+		if err := app.Start(); err != nil {
+			return err
+		}
 		return nil
 	},
 }
