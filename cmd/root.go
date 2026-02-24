@@ -47,6 +47,9 @@ var RunCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		appName := args[0]
+		if appName == "" {
+			return nil
+		}
 		entries, err := internal.DesktopEntries()
 		if err != nil {
 			return err
@@ -70,6 +73,9 @@ var PreviewCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		appName := args[0]
+		if appName == "" {
+			return nil
+		}
 		entries, err := internal.DesktopEntries()
 		if err != nil {
 			return err
