@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os/exec"
+	"slices"
 	"strings"
 
 	"github.com/htsee/fzlaunch/internal"
@@ -28,7 +29,12 @@ var ListCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		for name := range entries {
+		var keys []string
+		for key := range entries {
+			keys = append(keys, key)
+		}
+		slices.Sort(keys)
+		for _, name := range keys {
 			fmt.Println(name)
 		}
 		return nil
