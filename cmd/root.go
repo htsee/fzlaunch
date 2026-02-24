@@ -12,7 +12,7 @@ import (
 
 var RootCmd = &cobra.Command{
 	Use:   "fzlaunch",
-	Short: "cli app launcher for fuzzy finders",
+	Short: "CLI app launcher for fuzzy finders",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := cmd.Help(); err != nil {
 			return err
@@ -23,7 +23,7 @@ var RootCmd = &cobra.Command{
 
 var ListCmd = &cobra.Command{
 	Use:   "list",
-	Short: "list applications",
+	Short: "List applications",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		entries, err := internal.DesktopEntries()
 		if err != nil {
@@ -43,7 +43,7 @@ var ListCmd = &cobra.Command{
 
 var RunCmd = &cobra.Command{
 	Use:   "run [app]",
-	Short: "run application",
+	Short: "Run application",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		appName := args[0]
@@ -69,7 +69,7 @@ var RunCmd = &cobra.Command{
 
 var PreviewCmd = &cobra.Command{
 	Use:   "preview [app]",
-	Short: "show information about application",
+	Short: "Show information about application",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		appName := args[0]
@@ -103,8 +103,19 @@ var PreviewCmd = &cobra.Command{
 	},
 }
 
+var Version = "0.1.0"
+
+var VersionCmd = &cobra.Command{
+	Use:   "version",
+	Short: "Display version",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Printf("fzlaunch %s\n", Version)
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(ListCmd)
 	RootCmd.AddCommand(RunCmd)
 	RootCmd.AddCommand(PreviewCmd)
+	RootCmd.AddCommand(VersionCmd)
 }
