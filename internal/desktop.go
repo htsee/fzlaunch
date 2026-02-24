@@ -33,8 +33,7 @@ func GetDesktop() []string {
 
 type DesktopEntry struct {
 	IsTerminal  bool
-	Exec        string
-	Args        []string
+	Exec        []string
 	GenericName string
 	Comment     string
 	Categories  []string
@@ -49,8 +48,8 @@ func ParseDesktop(desktopPath string) (string, DesktopEntry, error) {
 	}
 	lines := strings.Split(string(content), "\n")
 	var isTerm bool
-	var appName, appExec, appGenericName, appComment, appIcon string
-	var appArgs, appCategories, appKeywords []string
+	var appName, appGenericName, appComment, appIcon string
+	var appExec, appCategories, appKeywords []string
 	for _, line := range lines {
 		key, val, found := strings.Cut(line, "=")
 		if !found {
@@ -69,10 +68,9 @@ func ParseDesktop(desktopPath string) (string, DesktopEntry, error) {
 		case "Name":
 			appName = val
 		case "Exec":
-			appExec, _, _ = strings.Cut(val, "%")
-			appExec = strings.TrimSpace(appExec)
-			cmd := strings.Split(appExec, " ")
-			appExec, appArgs = cmd[0], cmd[1:]
+			cmd, _, _ := strings.Cut(val, "%")
+			cmd = strings.TrimSpace(cmd)
+			appExec = strings.Split(cmd, " ")
 		case "GenericName":
 			appGenericName = val
 		case "Comment":
@@ -86,9 +84,9 @@ func ParseDesktop(desktopPath string) (string, DesktopEntry, error) {
 		}
 	}
 	return appName, DesktopEntry{
-		IsTerminal:  isTerm,
+		IsTerminal: isTerm,
+		// Exec:        appExec,
 		Exec:        appExec,
-		Args:        appArgs,
 		GenericName: appGenericName,
 		Comment:     appComment,
 		Categories:  appCategories,
@@ -105,7 +103,7 @@ func DesktopEntries() (map[string]DesktopEntry, error) {
 		if err != nil {
 			return nil, err
 		}
-		if entry.IsTerminal || name == "" || entry.Exec == "" {
+		if entry.IsTerminal || name == "" || len(entry.Exec) == 0 {
 			continue
 		}
 		entries[name] = entry

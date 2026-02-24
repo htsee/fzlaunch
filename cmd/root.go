@@ -59,7 +59,7 @@ var RunCmd = &cobra.Command{
 			fmt.Printf("cannot find application %q", appName)
 			return nil
 		}
-		app := exec.Command(entry.Exec, entry.Args...)
+		app := exec.Command("nohup", entry.Exec...)
 		if err := app.Start(); err != nil {
 			return err
 		}
