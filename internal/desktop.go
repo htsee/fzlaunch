@@ -45,7 +45,7 @@ type DesktopEntry struct {
 func ParseDesktop(desktopPath string) (string, DesktopEntry, error) {
 	content, err := os.ReadFile(desktopPath)
 	if err != nil {
-		return "", DesktopEntry{}, fmt.Errorf("cannot read file %v", desktopPath)
+		return "", DesktopEntry{}, fmt.Errorf("cannot read file %q", desktopPath)
 	}
 	lines := strings.Split(string(content), "\n")
 	var isTerm bool

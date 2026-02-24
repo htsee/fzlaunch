@@ -11,7 +11,7 @@ import (
 
 var RootCmd = &cobra.Command{
 	Use:   "fzlaunch",
-	Short: "cli app launcher, can be piped into a fuzzy search menu",
+	Short: "cli app launcher for fuzzy finders",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := cmd.Help(); err != nil {
 			return err
@@ -36,7 +36,7 @@ var ListCmd = &cobra.Command{
 }
 
 var RunCmd = &cobra.Command{
-	Use:   "run",
+	Use:   "run [app]",
 	Short: "run application",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -47,7 +47,7 @@ var RunCmd = &cobra.Command{
 		}
 		entry, exist := entries[appName]
 		if !exist {
-			fmt.Printf("cannot find application %v", appName)
+			fmt.Printf("cannot find application %q", appName)
 			return nil
 		}
 		app := exec.Command(entry.Exec, entry.Args...)
@@ -59,7 +59,7 @@ var RunCmd = &cobra.Command{
 }
 
 var PreviewCmd = &cobra.Command{
-	Use:   "preview",
+	Use:   "preview [app]",
 	Short: "show information about application",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -70,7 +70,7 @@ var PreviewCmd = &cobra.Command{
 		}
 		entry, exist := entries[appName]
 		if !exist {
-			fmt.Printf("cannot find application %v", appName)
+			fmt.Printf("cannot find application %q", appName)
 			return nil
 		}
 		preview := appName + "\n\n"
