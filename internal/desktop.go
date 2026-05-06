@@ -84,8 +84,7 @@ func ParseDesktop(desktopPath string) (string, DesktopEntry, error) {
 		}
 	}
 	return appName, DesktopEntry{
-		IsTerminal: isTerm,
-		// Exec:        appExec,
+		IsTerminal:  isTerm,
 		Exec:        appExec,
 		GenericName: appGenericName,
 		Comment:     appComment,
